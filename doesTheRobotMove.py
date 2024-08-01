@@ -1,11 +1,11 @@
-import URClass
+import Rebuild.UR5Robot as UR5Robot
 import SafeVariableClass
 import chessMoveClass
 
 class Test:
 
     safe_v= SafeVariableClass.SafeVariableClass()
-    urClass = URClass.URClass()
+    urClass = UR5Robot.UR5Robot()
     test = chessMoveClass.chessMoveClass()
     def __init__(self) -> None:
         pass

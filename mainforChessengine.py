@@ -2,10 +2,10 @@ import ChessEngine as ce
 import chess as ch
 import chessMoveClass 
 import Getuci 
-import URClass as ur
+import Rebuild.UR5Robot as ur
 import SafeVariableClass as safe_v
 
-urclass = ur.URClass()
+urclass = ur.UR5Robot()
 getuci = Getuci.Getuci()
 chess_move_class_object = chessMoveClass.chessMoveClass()
 safe_var_class = safe_v.SafeVariableClass()

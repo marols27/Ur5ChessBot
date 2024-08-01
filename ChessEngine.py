@@ -1,4 +1,4 @@
-import chess as ch
+import chess
 import random as rd
 
 class Engine:
@@ -16,7 +16,7 @@ class Engine:
         compt = 0
         #Sums up the material values
         for i in range(64):
-            compt+=self.squareResPoints(ch.SQUARES[i])
+            compt+=self.squareResPoints(chess.SQUARES[i])
         compt += self.mateOpportunity() + self.openning() + 0.001*rd.random()
         return compt
 
@@ -44,15 +44,15 @@ class Engine:
     #system value of it's resident
     def squareResPoints(self, square):
         pieceValue = 0
-        if(self.board.piece_type_at(square) == ch.PAWN):
+        if(self.board.piece_type_at(square) == chess.PAWN):
             pieceValue = 1
-        elif (self.board.piece_type_at(square) == ch.ROOK):
+        elif (self.board.piece_type_at(square) == chess.ROOK):
             pieceValue = 5.1
-        elif (self.board.piece_type_at(square) == ch.BISHOP):
+        elif (self.board.piece_type_at(square) == chess.BISHOP):
             pieceValue = 3.33
-        elif (self.board.piece_type_at(square) == ch.KNIGHT):
+        elif (self.board.piece_type_at(square) == chess.KNIGHT):
             pieceValue = 3.2
-        elif (self.board.piece_type_at(square) == ch.QUEEN):
+        elif (self.board.piece_type_at(square) == chess.QUEEN):
             pieceValue = 8.8
 
         if (self.board.color_at(square)!=self.color):
@@ -63,7 +63,7 @@ class Engine:
         
     def engine(self, candidate, depth):
         
-        #reached max depth of search or no possible moves
+        #reachessed max depth of searchess or no possible moves
         if ( depth == self.maxDepth or self.board.legal_moves.count() == 0):
             return self.evalFunct()
         

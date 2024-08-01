@@ -3,7 +3,7 @@ import Getuci as gu
 import mainforChessengine
 import chess as ch
 import SafeVariableClass as safe_v
-import URClass as ur                                    #Comment out if you want to run the chess program
+import Rebuild.UR5Robot as ur                                    #Comment out if you want to run the chess program
 
 chessMoveClass = tc.chessMoveClass()
 mainEngine= mainforChessengine.mainforChessengine()
@@ -16,7 +16,7 @@ urclass = mainforChessengine.urclass                    #Else if you want to tes
 #NB!NB!NB! For recalibration!#
 """The two lines under are only for recalibration, dont try this!"""
 instance_of_class = safe_v.SafeVariableClass()
-calibrate_new_position = instance_of_class.make_new_motherpoint(urclass.rtde_r)
+calibrate_new_position = instance_of_class.make_new_motherpoint(urclass.info)
 #NB!NB!NB!#
 
 
