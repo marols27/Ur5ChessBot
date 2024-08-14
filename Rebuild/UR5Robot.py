@@ -2,6 +2,7 @@ import rtde_control #import RTDEControlInterface as RTDEControl
 import rtde_receive #import RTDEReceiveInterface as RTDEReceive
 from robotiq_gripper_control import RobotiqGripper
 import copy
+from ToolCenterPoint import ToolCenterPoint as TCP
 
 
 #import Getuci
@@ -46,58 +47,97 @@ class UR5Robot:
 
 
     # Fields:
-    
+    travelHeight = None
+    homePose = None
+    connectionIP = None
+    acceleration = None
+    speed = None
+    gripperSpeed = None
+    gripperForce = None
+
+    # Interfaces:
+    control = None
+    info = None
+    gripper = None
+
 
     # Constructor:
-    def __init__(self, travelHeight, conectionIP: str = "172.31.1.144", gripperForce: float = 50, gripperSpeed: float = 100, speed: float = 0.25, acceleration: float = 0.1):
-        print("Connecting to robot...")
-        self.controll = rtde_control.RTDEControlInterface(conectionIP)
-        self.info = rtde_receive.RTDEReceiveInterface(conectionIP)
-        self.gripper = RobotiqGripper(self.controll)
-        print("Connected sucsessfuly to robot!")
+    def __init__(self, travelHeight: float, homePose: TCP, connectionIP: str, acceleration: float, speed: float, gripperSpeed: float, gripperForce: float):
+        self.travelHeight = travelHeight
+        self.homePose = homePose
+        self.connectionIP = connectionIP
+        self.acceleration = acceleration
+        self.speed = speed
+        self.gripperSpeed = gripperSpeed
+        self.gripperForce = gripperForce
+
+        # Connection and setup:
+        self.control = rtde_control.RTDEControlInterface(connectionIP)
+        self.info = rtde_receive.RTDEReceiveInterface(connectionIP)
+        self.gripper = RobotiqGripper(self.control)
+        self.gripper.activate()
         self.gripper.set_force(gripperForce)  # from 0 to 100 %
         self.gripper.set_speed(gripperSpeed)  # from 0 to 100 %
-        self.speed = speed
-        self.acceleration = acceleration
-        self.travelHeight = travelHeight
-        # Må ikke endre noe på variablene over, det kan skape en kjedereaksjon med alle funksjonene
+        self.drop()
 
 
     # Methodes:
-    def recalibrateFeature(self):
-        self.drop()
-        self.controll.teachMode()
-        input("Move the robot to the first calibration point and press enter...")
-        originPose = self.info.getActualTCPPose()
-        input("Move the robot to the seccond calibration point and press enter...")
-        xAxisPose = self.info.getActualTCPPose()
-        input("Move the robot to the third calibration point and press enter...")
-        xyplanePose = self.info.getActualTCPPose()
-        input("Move the robot away and press enter to finish calibration...")
-        self.controll.endTeachMode()
-        return [originPose, xAxisPose, xyplanePose]
-    
-    def moveByUCI(self, uciMove):
-        uci = [uciMove[:2], uciMove[2:4]]
-        if len(uciMove) == 4:
-            uci.append(None)
-        else:
-            uci.append(uciMove[4])
-        print(uci)
-    
-    def goto(self, pos): # Move to specified position 
-        self.controll.moveL(pos, self.speed, self.acceleration)
+    def getPos(self):
+        self.control.teachMode()
+        input("Move the robot to the point and press enter to get the pose...")
+        self.control.endTeachMode()
+        pose = self.info.getActualTCPPose()
+        return pose
+        
+    def goto(self, pos: "list[float]"):
+        try:
+            self.control.moveL(pos, self.speed, self.acceleration)
+        except:
+            if self.control.isConnected():
+                self.control.disconnect()
+            self.control.reconnect()
+            if self.info.isConnected():
+                self.info.disconnect()
+            self.info.reconnect()
+            self.control.moveL(pos, self.speed, self.acceleration)
 
-    def grab(self): # Grab piece 
-        self.gripper.move(6)
 
-    def drop(self): # Let go of piece
-        self.gripper.move(37)
+    def grab(self):
+        try:
+            self.gripper.move(6)
+        except:
+            if self.control.isConnected():
+                self.control.disconnect()
+            self.control.reconnect()
+            if self.info.isConnected():
+                self.info.disconnect()
+            self.info.reconnect()
+            self.gripper.activate()
+            self.gripper.set_force(self.gripperForce)  # from 0 to 100 %
+            self.gripper.set_speed(self.gripperSpeed)  # from 0 to 100 %
+            self.gripper.move(37)
+            self.gripper.move(6)
 
-    def home(self): # Move to a presett home pose
-        self.goto([-0.01502896027794896, 0.16225169818269464, 0.4566147854450882, -1.456142795245294, -2.760610691602006, -0.04964717445743023])
 
-    def movePiece(self, fromPos, toPos, home = True): # Move a piece on the board from fromPos to toPos
+    def drop(self):
+        try:
+            self.gripper.move(37)
+        except:
+            if self.control.isConnected():
+                self.control.disconnect()
+            self.control.reconnect()
+            if self.info.isConnected():
+                self.info.disconnect()
+            self.info.reconnect()
+            self.gripper.activate()
+            self.gripper.set_force(self.gripperForce)  # from 0 to 100 %
+            self.gripper.set_speed(self.gripperSpeed)  # from 0 to 100 %
+            self.gripper.move(37)
+
+    def home(self):
+        self.goto(self.homePose.TCP)
+
+    def movePiece(self, fromPos: "list[float]", toPos: "list[float]", home = True):
         aboveFromPos = copy.deepcopy(fromPos)
         aboveFromPos[2] += self.travelHeight
         aboveToPos = copy.deepcopy(toPos)
@@ -113,17 +153,33 @@ class UR5Robot:
         if home:
             self.home()
 
-    def capturePiece(self, fromPos, toPos, capturePos): # Capture a piece at the toPos pose and move a piece on the board from fromPos to toPos
-        self.movePiece(toPos, capturePos, False)
+    def capturePiece(self, fromPos: "list[float]", toPos: "list[float]", capturePos: "list[float]"):
+        aboveToPos = copy.deepcopy(toPos)
+        aboveToPos[2] += self.travelHeight
+        self.goto(aboveToPos)
+        self.goto(toPos)
+        self.grab()
+        self.goto(aboveToPos)
+        self.goto(capturePos)
+        self.drop()
         self.movePiece(fromPos, toPos)
     
-    def enPassent(self, fromPos, toPos, targetPos, capturePos):
+    def enPassent(self, fromPos: "list[float]", toPos: "list[float]", targetPos: "list[float]", capturePos: "list[float]"):
         self.movePiece(fromPos, toPos, False)
         self.movePiece(targetPos, capturePos)
 
-    def castle(self, fromPosKing, toPosKing, fromPosRook, toPosRook):
+    def castle(self, fromPosKing: "list[float]", toPosKing: "list[float]", fromPosRook: "list[float]", toPosRook: "list[float]"):
         self.movePiece(fromPosKing, toPosKing, False)
         self.movePiece(fromPosRook, toPosRook)
+    
+    def promotion(self, fromPos: "list[float]", capturePos: "list[float]"):
+        self.movePiece(fromPos, capturePos)
+        # Request piece promotion.
+    
+    def capturePromotion(self, fromPos: "list[float]", toPos: "list[float]", capturePos: "list[float]"):
+        self.movePiece(fromPos, capturePos, False)
+        self.movePiece(toPos, capturePos)
+        # Request piece promotion.
 
     if __name__ == '__main__':
         pass
