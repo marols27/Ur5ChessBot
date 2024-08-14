@@ -156,8 +156,6 @@ class Game:
             if self.board.checkMate or self.board.staleMate or self.board.isInsuffichentMaterials:
                 gameIsRunning = False
         
-
-
         if self.board.checkMate:
             print(f"Checkmate! {'You loose!' if self.board.turn == self.color else 'You win!'}")
         if self.board.staleMate:
