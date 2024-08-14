@@ -7,6 +7,7 @@ from flask_socketio import SocketIO
 from ToolCenterPoint import ToolCenterPoint as TCP
 from UR5Robot import UR5Robot
 import json
+import copy
 
 class Game:
     """
@@ -48,12 +49,7 @@ class Game:
         boardIsReady = self.dgtBoard.getCurentBoard() == self.board.board.board_fen()
         #self.socket.emit("board_ready", boardIsReady)
         if boardIsReady:
-            if self.color == self.board.board.turn:
-                #self.socket.emit("Player_turn")
-                self.playerMove()
-            else:
-                #self.socket.emit("Robot_turn")
-                self.playRobotMove()
+            self.runGameLoop()
     
     def playRobotMove(self):
         pieceNames = {
@@ -124,7 +120,24 @@ class Game:
             "dgtBoardFEN": self.board.board.board_fen()#,            "PGN": str(self.gameInfo.game())
         }
         #socket.emit(move)
-        #print(json.dumps(move)) # send 
+        #print(json.dumps(move)) # send
+    
+    def getPlayerMove(self):
+        untouchedBoard = copy.deepcopy(self.board)
+        playerHasNotMoved = True
+        while playerHasNotMoved:
+            updatedBoard = self.dgtBoard.getCurentBoard()
+            move = untouchedBoard.getUCI(str(updatedBoard))
+            if move != None and chess.Move.from_uci(move) in untouchedBoard.board.legal_moves:
+                confirmCommand = input(f"Confirm move {move} y/n?")
+                if confirmCommand == "y":
+                    self.move = move
+                    #self.gameInfo.add_variation(chess.Move.from_uci(move))
+                    self.turn = self.board.turn
+                    playerHasNotMoved = False
+                else:
+                    print("Move not confirmed!")
+        return self.move
         
     def playerMove(self):
         unTouchedBoard = self.board

@@ -26,7 +26,6 @@ conditions = {
 robot.home()
 chessGame.on_conditions(conditions)
 chessGame.on_start()
-chessGame.runGameLoop()
 
 """
 # Event handlers:
