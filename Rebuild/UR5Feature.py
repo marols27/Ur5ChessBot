@@ -39,6 +39,8 @@ class UR5Feature(): # NB the constructor should be reconstructed to calculate ro
 
     # Fields
     Origin: "TCP" = None
+    XAxis: "TCP" = None
+    XYPlane: "TCP" = None
     XAxis: "list[float]" = None
     YAxis: "list[float]" = None
     ZAxis: "list[float]" = None
@@ -47,6 +49,8 @@ class UR5Feature(): # NB the constructor should be reconstructed to calculate ro
     # Constructrs:
     def __init__(self, origin: TCP, xAxis: TCP, xyPlane: TCP):
         self.Origin = origin
+        self.XAxis = xAxis
+        self.XYPlane = xyPlane
         origin = origin.Position()
         xAxis = xAxis.Position()
         xyPlane = xyPlane.Position()

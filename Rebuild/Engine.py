@@ -9,7 +9,7 @@ class Engine:
 
 
     def __init__(self):
-        engine = chess.engine.SimpleEngine.popen_uci(r"/home/rocotics/Desktop/Ur5CessBot/Ur5ChessBot/Rebuild/stockfish-ubuntu-x86-64-sse41-popcnt/stockfish/src/stockfish") 
+        engine = chess.engine.SimpleEngine.popen_uci(r"./stockfish-ubuntu-x86-64-sse41-popcnt/stockfish/src/stockfish") 
 
 
 

@@ -1,4 +1,4 @@
-class ToolCenterPoint:
+class ToolCenterPoint(object):
     # A Tool Center Point or TCP for short consists of 6 values [x, y, z, rx, ry, rz].
     # The first 3 values (x, y, and z), are kartesian position values measured in meters,
     # and the remaining (xr, xy, and xz), are angle values measured in radiants.
@@ -20,7 +20,6 @@ class ToolCenterPoint:
     # Constructor:
     def __init__(self, TCP: 'list[float]') -> None:
         self.TCP = TCP
-
 
     # Methods:
     def Position(self) -> 'list[float]':
