@@ -6,15 +6,15 @@ from enum import Enum
 
 class PoseConfigure:
     """
-    ### Class for calibrating the robot to a specific settup.
+    ## Class for calibrating the robot to a specific settup.
 
-    ### ATTRIBUTES:
+    #### ATTRIBUTES:
     - conectionIP: 
         The IP of the robot.
     - fileName: 
         The name of the file to save the calibration to.
     
-    ### METHODES:
+    #### METHODES:
     - firstTimeSettupe(): 
         Calibrates the robot for the first time.
     - recalibrate(point: Points): 

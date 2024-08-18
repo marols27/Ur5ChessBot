@@ -9,42 +9,52 @@ from ToolCenterPoint import ToolCenterPoint as TCP
 #import SafeVariableClass
 
 class UR5Robot:
-    # CLASS DOCUMENTATION:
-    # This is a class containing the  UR5 robots conections, settings and methods for moving the robot.
-    
-    # Fields:
-    # - controll:   Interface for driving the robot
-    # - info:       Interface for getting the robots current information
-    # - gripper:    Interface for driving the gripper
-    # - speed:      Robot driving speed
-    # - acceleration:   Robot driving acceleration
-    # - travelHeight:   Robot driving height above the chess board
+    """
+    ## UR5Robot class for some simpler work with a UR5Robot playing chess.
+    This class is just ment to store the settings of a robot, as well as the different interfaces in a single object.
+    By doing this we get to create robotic moves by deffining the basic movements Goto, Grab, and Dropp,
+    and then combinding theese basic movements to create movements of our chess needs.
 
-    # Constructor:
-    #  - __init__(
-    #           travelHeight, 
-    #           conectionIP: str = "172.31.1.144", 
-    #           gripperForce: float = 50, 
-    #           gripperSpeed: float = 100, 
-    #           speed: float = 0.09, 
-    #           acceleration: float = 0.1
-    # ): Constructs a robot conected object, 
-    
-    # Functions:
-    # - recalibrateFeature(): Robot functionality for feature recalibration. Returns 3 Tool center points.
-    # - moveByUCI(uciMove): Performs any chess move by the uci string.
-    #
-    # # BASIC MOVEMENT:
-    # - goto(pos): Makes the robot make a simple move to the specified pos.
-    # - grab(): Makes the robot close the gripper to pick upp a piece.
-    # - drop(): Makes the robot open the gripper to drop a piece.
-    #
-    # # COMBINED MOVEMENT:
-    # - movePiece(fromPos, toPos): Makes a ordinary chess piece move.
-    # - capturePiece(fromPos, toPos, capturePos): Captures a piece, and makes an ordinary chess piece move afterwords.
-    #
-    # 
+    #### Fields:
+        - travelHeight: The height the robot needs to move to avoid piece collition while moving pieces.
+        - homePose:     A predeffined position for the robot to go to and stop in while not doing anything.
+        - connectionIP: The UR5Robots IP adress, for conection of the different interfaces.
+        - acceleration: The UR5Robots movement acceleration.
+        - speed:        The UR5Robots movement speed.
+        - gripperSpeed: The UR5Robots gripper speed.
+        - gripperForce: The UR5Robots gripper force.
 
+        - control:  Interface for driving the robot.
+        - info:     Interface for getting current information about the robot.
+        - gripper:  Interface for driving the robots gripper.
+    
+    #### Constructor:
+        - __init__(
+            self,
+            travelHeight: float,
+            conectionIP: str,
+            gripperForce: float,
+            gripperSpeed: float,
+            speed: float,
+            acceleration: float
+        )
+    
+    #### Methodes:
+        - `getPos(self):` Lets you move the robot arm to a desiered location, and returns the pose of that location when confirmed.
+        - freeDrive(self): Lets you move the robot freely until you confirm the position. (To move the robot away).
+    ##### Basic movement:
+        - goto(self, pos: "list[float]"): Moves the robot to the specified position.
+        - grab(self): Makes the robot gripper close.
+        - drop(self): Makes the robot gripper open.
+    ##### Combined movement:
+        - home(self): Moves the robot to the predeffined home pose.
+        - movePiece(self, fromPos: "list[float]", toPos: "list[float]", home = True): Moves a chess piece form a specified location to another specified location, and returns the robot to the home stance if home = True.
+        - capturePiece(self, fromPos: "list[float]", toPos: "list[float]", capturePos: "list[float]"): Captures a piece to the capture pos, and move the piece from and to the specified positions.
+        - enPassent(self, fromPos: "list[float]", toPos: "list[float]", targetPos: "list[float]", capturePos: "list[float]"): Performes an en passent move, by from and to poses, a target pose and a capture pose.'
+        - castle(self, fromPosKing: "list[float]", toPosKing: "list[float]", fromPosRook: "list[float]", toPosRook: "list[float]"): Performs a casteling move by two sets of from and to poses.
+        - promotion(self, fromPos: "list[float]", capturePos: "list[float]"): Captures a pawn for promotion, and requests the user to place down the requiered piece.
+        - capturePromotion(self, fromPos: "list[float]", toPos: "list[float]", capturePos: "list[float]"): Captures a pawn and an opponet piece and requests the user to place down the requiered piece.
+    """
 
     # Fields:
     travelHeight = None
@@ -88,6 +98,11 @@ class UR5Robot:
         self.control.endTeachMode()
         pose = self.info.getActualTCPPose()
         return pose
+
+    def freeDrive(self):
+        self.control.teachMode()
+        input("Move the robot away to a desiered location and press enter to continiue...")
+        self.control.endTeachMode()
         
     def goto(self, pos: "list[float]"):
         try:

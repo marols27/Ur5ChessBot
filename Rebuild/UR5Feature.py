@@ -51,9 +51,9 @@ class UR5Feature(): # NB the constructor should be reconstructed to calculate ro
         self.Origin = origin
         self.XAxis = xAxis
         self.XYPlane = xyPlane
-        origin = origin.Position()
-        xAxis = xAxis.Position()
-        xyPlane = xyPlane.Position()
+        origin = origin.position()
+        xAxis = xAxis.position()
+        xyPlane = xyPlane.position()
 
         xVector = [xAxis[0] - origin[0], xAxis[1] - origin[1], xAxis[2] - origin[2]]
         self.XAxis = xVector / NP.linalg.norm(xVector)

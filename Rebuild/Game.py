@@ -10,11 +10,12 @@ import json
 
 class Game:
     """
-    A class for handling the game loop of a chess game,
-    and to make use of the different components in a chess game using the UR5Robot.
+    ### A class for handling the game loop of a chess game, and to handle the turn cycle.
 
-    
+    ### FIELDS:
+
     """
+
     socket = None
     robot = None
     dgtBoard = None
