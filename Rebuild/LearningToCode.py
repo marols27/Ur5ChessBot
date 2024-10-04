@@ -7,7 +7,7 @@ import chess.engine
 import chess.pgn
 import Settings
 from PoseConfigure import PoseConfigure
-from guiMain import GUI
+from Rebuild.gui import GUI
 
 # robot = UR5Robot(Settings.TRAVEL_HEIGHT, Settings.HOME, Settings.CONNECTION_IP, Settings.ACCELERATION, Settings.SPEED, Settings.GRIPPER_SPEED, Settings.GRIPPER_FORCE)
 # dgt = DGTBoard(Settings.PORT)
