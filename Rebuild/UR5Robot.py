@@ -89,6 +89,7 @@ class UR5Robot:
         self.gripper.set_force(gripperForce)  # from 0 to 100 %
         self.gripper.set_speed(gripperSpeed)  # from 0 to 100 %
         self.drop()
+        self.control.disconnect()
 
 
     # Methodes:

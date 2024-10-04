@@ -16,7 +16,6 @@ class Game:
 
     """
 
-    socket = None
     robot = None
     dgtBoard = None
     board = None
@@ -28,9 +27,9 @@ class Game:
     difficulty = None
     color = None
     move = None
+    
 
-    def __init__(self, socket: SocketIO, robot: UR5Robot, dgtBoard: DGTBoard, board: Board, engine: chess.engine.SimpleEngine, gameInfo: chess.pgn.Game, capturePos: TCP, timeout: chess.engine.Limit) -> None:
-        self.socket = socket
+    def __init__(self, robot: UR5Robot, dgtBoard: DGTBoard, board: Board, engine: chess.engine.SimpleEngine, gameInfo: chess.pgn.Game, capturePos: TCP, timeout: chess.engine.Limit, difficulty: int, color: bool) -> None:
         self.robot = robot
         self.dgtBoard = dgtBoard
         self.board = board
@@ -38,25 +37,16 @@ class Game:
         self.gameInfo = gameInfo
         self.capturePos = capturePos
         self.timeout = timeout
-    
-    #@socket.on('conditions')
-    def on_conditions(self, data):
-        self.difficulty = data["difficulty"]
-        self.color = data["color"]
+        self.difficulty = difficulty
+        self.color = color
 
-    #@socket.on('start')
-    def on_start(self):
-        boardIsReady = self.dgtBoard.getCurentBoard() == self.board.board.board_fen()
-        #self.socket.emit("board_ready", boardIsReady)
-        if boardIsReady:
-            if self.color == self.board.board.turn:
-                #self.socket.emit("Player_turn")
-                self.playerMove()
-            else:
-                #self.socket.emit("Robot_turn")
-                self.playRobotMove()
+        
     
+    def getPGN(self):
+        pgn = self.board.getPGN()
+
     def playRobotMove(self):
+        self.robot.control.reconnect()
         pieceNames = {
             "q": "queen",
             "r": "rook",
@@ -124,8 +114,24 @@ class Game:
         move = {
             "dgtBoardFEN": self.board.board.board_fen()#,            "PGN": str(self.gameInfo.game())
         }
-        #socket.emit(move)
-        #print(json.dumps(move)) # send 
+        self.robot.control.disconnect()
+    
+    def confirmMove(self):
+        oldBoard = self.board
+        print(oldBoard)
+        updatedBoard = self.dgtBoard.getCurentBoard()
+        updatedBoard = self.dgtBoard.getCurentBoard()
+        print(updatedBoard)
+        move = oldBoard.getUCI(str(updatedBoard))
+        if move != None and move in [str(m) for m in oldBoard.board.legal_moves]:
+                    print('setting move')
+                    self.move = move
+                    self.gameInfo.add_variation(chess.Move.from_uci(move))
+                    self.board.push(move)
+                    self.turn = self.board.turn
+        else:
+            print("Move is illegal")
+        pass
         
     def playerMove(self):
         unTouchedBoard = self.board
@@ -136,9 +142,12 @@ class Game:
             if move != None and move in [str(m) for m in unTouchedBoard.board.legal_moves]:
                 confirmCommand = input(f"Confirm move {move} y/n?")
                 if confirmCommand == "y":
+                    print('setting move')
                     self.move = move
-                    #self.gameInfo.add_variation(chess.Move.from_uci(move))
+                    self.gameInfo.add_variation(chess.Move.from_uci(move))
+                    self.board.push(move)
                     self.turn = self.board.turn
+                    print(self.board.turn)
                     playerHasNotMoved = False
                 else:
                     print("Move not confirmed!")
@@ -147,13 +156,12 @@ class Game:
         gameIsRunning = True
         while gameIsRunning:
             if self.board.turn == self.color:
-                #self.socket.emit("Player_turn")
                 print("Your turn!")
                 self.playerMove()
             else:
-                #self.socket.emit("Robot_turn")
                 print("Robots turn!")
                 self.playRobotMove()
+
             if self.board.checkMate or self.board.staleMate or self.board.isInsuffichentMaterials:
                 gameIsRunning = False
         

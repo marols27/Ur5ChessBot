@@ -1,5 +1,6 @@
 import asyncio
 import asyncdgt
+import threading
 
 class DGTBoard():
     # CLASS DOCUMENTATION
@@ -18,8 +19,9 @@ class DGTBoard():
     # METHODES:
     # getCurentBoard(): returns a string representation of the curent board in a 15 x 8 size, (15 because of spaces between each squares).
 
-    def __init__(self, port: str = "/dev/ttyACM*") -> None:
-        self.loop = asyncio.get_event_loop()
+    def __init__(self, port: str = "/dev/ttyS0") -> None:
+        #threading.Thread()
+        self.loop = asyncio.new_event_loop()
         self.dgtConnection = asyncdgt.auto_connect(self.loop, [port])
     
     def getCurentBoard(self) -> str:
@@ -31,7 +33,6 @@ class DGTBoard():
         for i in range(len(strBoard)):
             strBoard[i] = strBoard[i].split(" ")
         fen = ""
-        emptySpacesCounter = 0
         for y in range(len(strBoard)):
             for x in range(len(strBoard[y])):
                 if strBoard[y][x] != ".":
@@ -47,3 +48,12 @@ class DGTBoard():
             if y < 7:
                 fen += "/"
         return fen
+    
+    def run(self):
+        try:
+            self.loop.run_forever()
+        except KeyboardInterrupt:
+            pass
+        finally:
+            self.dgtConnection.close()
+            self.loop.close()

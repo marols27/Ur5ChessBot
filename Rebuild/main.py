@@ -1,35 +1,75 @@
 import chess.engine
 import chess.pgn
 from ChessGameEnvironment import ChessGameEnvironment
+from flask_socketio import SocketIO, send, emit
 from UR5Robot import UR5Robot
 from DGTBoard import DGTBoard
 from Board import Board
 import chess
 import Settings
 from Game import Game
+import threading
 
 # If you wish to change any of the settings, it is recommended to change them in the Settings.py file.
-#socket = Settings.SOCKET
-robot = UR5Robot(travelHeight=Settings.TRAVEL_HEIGHT, homePose=Settings.HOME, connectionIP=Settings.CONNECTION_IP, acceleration=Settings.ACCELERATION, speed=Settings.SPEED, gripperSpeed=Settings.GRIPPER_SPEED, gripperForce=Settings.GRIPPER_FORCE)
+chessGame = None
+robot = UR5Robot(
+    travelHeight=Settings.TRAVEL_HEIGHT, 
+    homePose=Settings.HOME, 
+    connectionIP=Settings.CONNECTION_IP, 
+    acceleration=Settings.ACCELERATION, 
+    speed=Settings.SPEED, 
+    gripperSpeed=Settings.GRIPPER_SPEED, 
+    gripperForce=Settings.GRIPPER_FORCE
+)
+robot.goto([0.7091606786033604, -0.0541754831329132, 0.29518362120390085, 2.1329911700278688, 2.2857584007660523, 0.0035996202591358053])
+robot.home()
+socket = Settings.SOCKET
 dgtBoard = DGTBoard(port=Settings.PORT)
-board = Board(startFen=Settings.START_FEN, feature=Settings.BOARD_FEATURE, boardSize=Settings.BOARD_SIZE, squareSize=Settings.SQUARE_SIZE)
+board = Board(
+    startFen=Settings.START_FEN, 
+    feature=Settings.BOARD_FEATURE, 
+    boardSize=Settings.BOARD_SIZE, 
+    squareSize=Settings.SQUARE_SIZE
+)
 engine = chess.engine.SimpleEngine.popen_uci(Settings.STOCKFISH_PATH)
 gameInfo = chess.pgn.Game()
 capturePos = Settings.CAPTURE_POSE
 timeout = Settings.TIMEOUT
 
-chessGame = Game(socket=True, robot=robot, dgtBoard=dgtBoard, board=board, engine=engine, gameInfo=gameInfo, capturePos=capturePos, timeout=timeout)
-conditions = {
-    "difficulty": Settings.DIFFICULTY,
-    "color": chess.BLACK
-}
-robot.home()
-chessGame.on_conditions(conditions)
-chessGame.on_start()
-chessGame.runGameLoop()
+conditions = None
+dgtThread = threading.Thread(None, dgtBoard.run)
+dgtThread.daemon = True
+dgtThread.start()
 
+@dgtBoard.dgtConnection.on('board')
+def on_board(board):
+    print(board)
+    #emit('board', board)
+
+def start_game():
+    #try:
+        global chessGame
+        if chessGame == None:
+            chessGame = Game(
+                socket=socket, 
+                robot=robot, 
+                dgtBoard=dgtBoard, 
+                board=board, 
+                engine=engine, 
+                gameInfo=gameInfo, 
+                capturePos=capturePos, 
+                timeout=timeout
+            )
+            robot.home()
+            global conditions
+            chessGame.on_conditions(conditions)
+            chessGame.runGameLoop()
+    #except Exception as e:
+    #    print(f"Error during game initialization: {e}")
+
+socket.start()
+# Event handlers (commented out unless needed for your specific logic):
 """
-# Event handlers:
 @robot.control.on("connect")
 def on_robot_connection():
     socket.emit("robot_connected")
@@ -61,5 +101,4 @@ def on_dgt_connection():
 @dgtBoard.dgtConnection.on("disconnect")
 def on_dgt_disconnection():
     socket.emit("dgt_disconnected")
-
 """

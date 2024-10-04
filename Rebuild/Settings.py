@@ -4,13 +4,17 @@ from ToolCenterPoint import ToolCenterPoint as TCP
 from UR5Feature import UR5Feature
 from PoseConfigure import PoseConfigure
 import Socket
+import socket
 import json
 
 # Main constants
 HOST: str = '0.0.0.0'  # Host for the server
-PORT: int = 8080    # Port for the server
+sock = socket.socket()
+sock.bind(('', 0))
+PORT: int = sock.getsockname()[1]    # Port for the server OTHER: 3000, 80, 8000
+sock.close()
 DEBUG: bool = True  # Debug mode for the server
-#SOCKET = Socket.Socket(host=HOST, port=PORT, debug=DEBUG).socketio # socket 1
+#SOCKET = Socket.Socket()# socket 1
 
 
 # Chess Dimensions in meters
@@ -60,7 +64,7 @@ BOARD_FEATURE = UR5Feature(ORIGIN, XAXIS, XYPLANE)
 
 
 # Engine
-STOCKFISH_PATH = r"Rebuild/stockfish-ubuntu-x86-64-sse41-popcnt/stockfish/src/stockfish" # Path to stockfish engine file, replace with actual path.
+STOCKFISH_PATH = r"/home/rocotics/Desktop/MrCheckMate/Ur5ChessBot/Rebuild/stockfish-ubuntu-x86-64-sse41-popcnt/stockfish/src/stockfish" # Path to stockfish engine file, replace with actual path.
 TIMEOUT_TIME = 0.1  # Time limit for the engine
 TIMEOUT = chess.engine.Limit(time=TIMEOUT_TIME)  # Time limit for the engine
 DIFFICULTY = 1  # Example difficulty, replace with actual
