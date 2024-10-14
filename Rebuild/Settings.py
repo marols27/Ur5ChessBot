@@ -3,18 +3,7 @@ import chess.engine
 from ToolCenterPoint import ToolCenterPoint as TCP
 from UR5Feature import UR5Feature
 from PoseConfigure import PoseConfigure
-import Socket
-import socket
 import json
-
-# Main constants
-HOST: str = '0.0.0.0'  # Host for the server
-sock = socket.socket()
-sock.bind(('', 0))
-PORT: int = sock.getsockname()[1]    # Port for the server OTHER: 3000, 80, 8000
-sock.close()
-DEBUG: bool = True  # Debug mode for the server
-#SOCKET = Socket.Socket()# socket 1
 
 
 # Chess Dimensions in meters
