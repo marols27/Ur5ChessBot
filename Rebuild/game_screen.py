@@ -33,7 +33,7 @@ def show_game_screen(root, selection_frame, color, difficulty):
     
     # Chessboard frame
     board_frame = tk.Frame(game_frame, bg="#1a237e")
-    board_frame.grid(row=0, column=0, padx=20, pady=20, sticky="n")
+    board_frame.grid(row=0, column=0, padx=20, pady=20, sticky="n", rowspan=3)
 
     # Define desired square size
     square_size = 100
