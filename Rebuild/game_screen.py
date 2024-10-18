@@ -11,6 +11,7 @@ import Settings
 import chess
 import chess.engine
 import chess.pgn
+from playsound import playsound
 
 def show_game_screen(root, selection_frame, color, difficulty):
     '''Show the game screen with the selected color and difficulty.'''
@@ -24,7 +25,7 @@ def show_game_screen(root, selection_frame, color, difficulty):
     board = Board(Settings.START_FEN, Settings.BOARD_FEATURE, Settings.BOARD_SIZE, Settings.SQUARE_SIZE)
     engine = chess.engine.SimpleEngine.popen_uci(Settings.STOCKFISH_PATH)
     if difficulty == "easy":
-        engine.configure({"Skill Level": 2})
+        engine.configure({"Skill Level": 1})
     elif difficulty == "medium":
         engine.configure({"Skill Level": 5})
     elif difficulty == "hard":
@@ -138,6 +139,7 @@ def show_game_screen(root, selection_frame, color, difficulty):
                 game.playRobotMove()
                 board_canvas.update_board(game.board.board.fen())
             else:
+                #playsound("speechfiles/incorrect_starting_positions.mp3")
                 messagebox.showinfo("The board is set up wrong", "Please set up the board correctly and press the confirm move button.")
                 play_first_move()
         

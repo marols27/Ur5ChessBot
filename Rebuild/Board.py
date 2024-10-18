@@ -408,4 +408,4 @@ class Board():
             self.legalMoves.append(x)
 
     def getPGN(self):
-        return chess.pgn.Game()
+        return self.board.move_stack

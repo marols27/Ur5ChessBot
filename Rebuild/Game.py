@@ -7,6 +7,7 @@ from flask_socketio import SocketIO
 from ToolCenterPoint import ToolCenterPoint as TCP
 from UR5Robot import UR5Robot
 import json
+from playsound import playsound
 
 class Game:
     """
@@ -44,6 +45,7 @@ class Game:
     
     def getPGN(self):
         pgn = self.board.getPGN()
+        return pgn
 
     def playRobotMove(self):
         self.robot.control.reconnect()
@@ -131,6 +133,7 @@ class Game:
                     self.turn = self.board.turn
                     self.playRobotMove()
         else:
+            playsound("speechfiles/illegal_move.mp3")
             print("Move is illegal")
             messageCallback()
         pass

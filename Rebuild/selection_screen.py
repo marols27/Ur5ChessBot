@@ -3,13 +3,15 @@ from tkinter import font as tkfont
 from game_screen import show_game_screen
 from Game import Game
 import random
+from playsound import playsound
 
 def show_selection_screen(root, home_frame):
     home_frame.destroy()
-
     # Padding variables for easy adjustment
     BUTTON_PADX = 70
     BUTTON_PADY = 40
+
+    playsound("speechfiles/welcome.mp3")
 
     # Function to update button colors when selected
     def update_button_color(var, buttons):
@@ -17,16 +19,13 @@ def show_selection_screen(root, home_frame):
             if var.get() == value:
                 if value == "easy":
                     button.config(bg="green", fg="white")
+                    #playsound("speechfiles/easy.mp3")
                 elif value == "medium":
                     button.config(bg="yellow", fg="black")
+                    #playsound("speechfiles/medium.mp3")
                 elif value == "hard":
                     button.config(bg="red", fg="white")
-                elif value == "white":
-                    button.config(bg="white", fg="black")
-                elif value == "black":
-                    button.config(bg="black", fg="white")
-                elif value == "random":
-                    button.config(bg="#1a237e", fg="white")
+                    #playsound("speechfiles/hard.mp3")
             else:
                 button.config(bg="#1a237e", fg="white")
 
