@@ -131,11 +131,18 @@ class Game:
                     self.gameInfo.add_variation(chess.Move.from_uci(move))
                     self.board.push(move)
                     self.turn = self.board.turn
+                    if self.board.checkMate:
+                        messageCallback("You won","Checkmate! Congratulations, you have defeated the chessrobot!")
+                    elif self.board.staleMate:
+                        messageCallback("It's a draw","Stalemate! The game is a draw!")
                     self.playRobotMove()
+                    if  self.board.checkMate:
+                        messageCallback("You lost","Checkmate! You have lost to the mighty chessrobot!")
+                    elif self.board.staleMate:
+                        messageCallback("It's a draw","Stalemate! The game is a draw!")
         else:
             playsound("speechfiles/illegal_move.mp3")
-            print("Move is illegal")
-            messageCallback()
+            messageCallback("Illegal move! Please try again.")
         pass
         
     def playerMove(self):
