@@ -104,15 +104,15 @@ def show_game_screen(root, selection_frame, color, difficulty):
     move_history.grid(row=0, column=0, padx=20, pady=20, sticky="n")
     
     
-    def illigal_move():
-        messagebox.showinfo("Illegal Move", "You have made an illegal move. Please move the piece back to its original position. And try again.")
+    def message_callback(header, text):
+        messagebox.showinfo(header,text)
         move_history.reset_to_current()
    
     def confirm_move():
         move_history.reset_to_current()
         if not move_history.is_current:
             board_canvas.update_board(game.dgtBoard.getCurentBoardFen())
-            game.confirmMove(illigal_move)
+            game.confirmMove(message_callback)
             board_canvas.update_board(game.board.board.fen())
         else:
             move_history.reset_to_current()
