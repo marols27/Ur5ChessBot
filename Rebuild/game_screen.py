@@ -88,27 +88,17 @@ def show_game_screen(root, selection_frame, color, difficulty):
     )
     
     resign_button.pack()
+
+    def illigal_move():
+        messagebox.showinfo("Illegal Move", "You have made an illegal move.")
+        move_history.reset_to_current()
    
-    # Example function to confirm move
     def confirm_move():
         move_history.reset_to_current()
 
         if not move_history.is_current:
-            # If we're in history mode, reset to current before making a move
-
-            # Confirm the player's move
-            game.confirmMove()
-
-            # Update the move history and board state in the GUI
-            move_history.update_move_history()
-
-            # Let the robot play its move
-            game.playRobotMove()
-
-            # Update the move history and board state in the GUI after the robot's move
-            move_history.update_move_history()
+            game.confirmMove(illigal_move)
         else:
-            # If we're in history mode, reset to current before making a move
             move_history.reset_to_current()
             confirm_move()
 
