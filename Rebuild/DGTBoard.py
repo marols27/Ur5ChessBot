@@ -30,6 +30,7 @@ class DGTBoard():
     
     def getCurentBoardFen(self) -> str:
         strBoard = str(self.loop.run_until_complete(self.dgtConnection.get_board())).split("\n")
+        emptySpacesCounter = 0
         for i in range(len(strBoard)):
             strBoard[i] = strBoard[i].split(" ")
         fen = ""
