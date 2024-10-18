@@ -72,44 +72,13 @@ def show_selection_screen(root, home_frame):
         )
     }
 
-    difficulty_buttons["easy"].grid(row=1, column=0, pady=10, sticky="n")
-    difficulty_buttons["medium"].grid(row=2, column=0, pady=10, sticky="n")
-    difficulty_buttons["hard"].grid(row=3, column=0, pady=10, sticky="n")
-
-    # Piece Color Section
-    color_label = tk.Label(selection_frame, text="Choose Your Pieces", font=title_font, fg="white", bg="#1a237e")
-    color_label.grid(row=0, column=1, pady=10, sticky="s")
-
-    color_var = tk.StringVar(value="white")
-
-    # Color Buttons
-    color_buttons = {
-        "white": tk.Radiobutton(
-            selection_frame, text="WHITE", variable=color_var, value="white",
-            font=button_font, fg="black", bg="#1a237e", indicatoron=0, padx=BUTTON_PADX, pady=BUTTON_PADY, borderwidth=5, relief="solid",
-            command=lambda: update_button_color(color_var, color_buttons)
-        ),
-        "black": tk.Radiobutton(
-            selection_frame, text="BLACK", variable=color_var, value="black",
-            font=button_font, fg="white", bg="#1a237e", indicatoron=0, padx=BUTTON_PADX, pady=BUTTON_PADY, borderwidth=5, relief="solid",
-            command=lambda: update_button_color(color_var, color_buttons)
-        ),
-        "random": tk.Radiobutton(
-            selection_frame, text="RANDOM", variable=color_var, value="random",
-            font=button_font, fg="white", bg="#1a237e", indicatoron=0, padx=BUTTON_PADX, pady=BUTTON_PADY, borderwidth=5, relief="solid",
-            command=lambda: update_button_color(color_var, color_buttons)
-        )
-    }
-
-    color_buttons["white"].grid(row=1, column=1, pady=10, sticky="n")
-    color_buttons["black"].grid(row=2, column=1, pady=10, sticky="n")
-    color_buttons["random"].grid(row=3, column=1, pady=10, sticky="n")
+    difficulty_buttons["easy"].grid(row=1, column=0, sticky="n")
+    difficulty_buttons["medium"].grid(row=1, column=1, sticky="n")
+    difficulty_buttons["hard"].grid(row=1, column=2, sticky="n")
 
     def handle_next():
-        if color_var.get() == "random":
-            color_var.set("white" if random.randint(0, 1) == 0 else "black")
         
-        show_game_screen(root, selection_frame, color_var.get(), difficulty_var.get())
+        show_game_screen(root, selection_frame, "black" ,difficulty_var.get())
     # Next Button
     next_button = tk.Button(
         selection_frame, 
@@ -124,7 +93,7 @@ def show_selection_screen(root, home_frame):
         borderwidth=0, 
         relief="solid"
     )
-    next_button.grid(row=4, column=1, pady=20, sticky="se")
+    next_button.grid(row=2, column=1, pady=20, sticky="se")
 
     root.grid_rowconfigure(0, weight=1)
     root.grid_columnconfigure(0, weight=1)
@@ -132,4 +101,3 @@ def show_selection_screen(root, home_frame):
 
     # Initial color setup
     update_button_color(difficulty_var, difficulty_buttons)
-    update_button_color(color_var, color_buttons)
