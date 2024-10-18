@@ -1,13 +1,12 @@
 import gtts
 import os
 
-language = "en"
-text = "Welcome to the Chess Robot! Please select the difficulty level you would like to play against."
-speech = gtts.gTTS(text=text, lang=language, slow=False)
+# Language in which you want to convert
+language = 'en-au'
 
 # Overwrite existing files if they already exist
 def save_speech(text, filename):
-    speech = gtts.gTTS(text=text, lang=language, slow=False)
+    speech = gtts.gTTS(text=text, lang=language, slow=False, )
     speech.save(filename)
 
 def overwrite_existing_files():
