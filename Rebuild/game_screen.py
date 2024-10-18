@@ -23,6 +23,12 @@ def show_game_screen(root, selection_frame, color, difficulty):
     dgt = DGTBoard(Settings.PORT)
     board = Board(Settings.START_FEN, Settings.BOARD_FEATURE, Settings.BOARD_SIZE, Settings.SQUARE_SIZE)
     engine = chess.engine.SimpleEngine.popen_uci(Settings.STOCKFISH_PATH)
+    if difficulty == "easy":
+        engine.configure({"Skill Level": 2})
+    elif difficulty == "medium":
+        engine.configure({"Skill Level": 5})
+    elif difficulty == "hard":
+        engine.configure({"Skill Level": 10})
     gameInfo = chess.pgn.Game()
     capturePos = Settings.CAPTURE_POSE
     timeout = Settings.TIMEOUT
