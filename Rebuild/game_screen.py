@@ -1,3 +1,4 @@
+import time
 import tkinter as tk
 from tkinter import messagebox
 from components.chessboard import Chessboard  # Import the Chessboard component
@@ -13,7 +14,11 @@ import chess.pgn
 
 def show_game_screen(root, selection_frame, color, difficulty):
     '''Show the game screen with the selected color and difficulty.'''
+
+    selection_frame.destroy()
+
     
+    # Create the game
     robot = UR5Robot(Settings.TRAVEL_HEIGHT, Settings.HOME, Settings.CONNECTION_IP, Settings.ACCELERATION, Settings.SPEED, Settings.GRIPPER_SPEED, Settings.GRIPPER_FORCE)
     dgt = DGTBoard(Settings.PORT)
     board = Board(Settings.START_FEN, Settings.BOARD_FEATURE, Settings.BOARD_SIZE, Settings.SQUARE_SIZE)
@@ -21,8 +26,8 @@ def show_game_screen(root, selection_frame, color, difficulty):
     gameInfo = chess.pgn.Game()
     capturePos = Settings.CAPTURE_POSE
     timeout = Settings.TIMEOUT
-    game = Game(robot, dgt, board, engine, gameInfo, capturePos, timeout, 10, False)    # Destroy the selection screen
-    selection_frame.destroy()
+    game = Game(robot, dgt, board, engine, gameInfo, capturePos, timeout, 10, False)
+
 
     # Create the main game frame
     game_frame = tk.Frame(root, bg="#1a237e")
@@ -50,9 +55,7 @@ def show_game_screen(root, selection_frame, color, difficulty):
     history_frame = tk.Frame(game_frame, bg="#1a237e")
     history_frame.grid(row=0, column=1, padx=20, pady=20, sticky="n")
 
-    # Create the MoveHistory component
-    move_history = MoveHistory(history_frame, board_canvas, game)    
-    move_history.grid(row=0, column=0, padx=20, pady=20, sticky="n")
+    
 
     # Action buttons frame
     action_frame = tk.Frame(game_frame, bg="#1a237e")
@@ -89,15 +92,21 @@ def show_game_screen(root, selection_frame, color, difficulty):
     
     resign_button.pack()
 
+    # Create the MoveHistory component
+    move_history = MoveHistory(history_frame, board_canvas, game)    
+    move_history.grid(row=0, column=0, padx=20, pady=20, sticky="n")
+    
+    
     def illigal_move():
         messagebox.showinfo("Illegal Move", "You have made an illegal move. Please move the piece back to its original position. And try again.")
         move_history.reset_to_current()
    
     def confirm_move():
         move_history.reset_to_current()
-
         if not move_history.is_current:
+            board_canvas.update_board(game.dgtBoard.getCurentBoardFen())
             game.confirmMove(illigal_move)
+            board_canvas.update_board(game.board.board.fen())
         else:
             move_history.reset_to_current()
             confirm_move()
@@ -115,12 +124,21 @@ def show_game_screen(root, selection_frame, color, difficulty):
         
     resign_button.config(command=resign_game)
     
-    if game.board.turn == True:
-            game.playRobotMove()
-
+    def play_first_move():
+        if game.board.turn == True:
+            current_dgt_fen = game.dgtBoard.getCurentBoardFen()
+            correct_start_fen = game.board.board.fen().split(" ")[0]
+            if current_dgt_fen == correct_start_fen:
+                game.playRobotMove()
+                board_canvas.update_board(game.board.board.fen())
+            else:
+                messagebox.showinfo("The board is set up wrong", "Please set up the board correctly and press the confirm move button.")
+                play_first_move()
+        
+    play_first_move()
 if __name__ == "__main__":
     root = tk.Tk()
     root.title("Chess Game")
     root.geometry("1024x768")
-    show_game_screen(root, tk.Frame(root), "white", "medium")
+    show_game_screen(root, tk.Frame(root), "black", "medium")
     root.mainloop()
