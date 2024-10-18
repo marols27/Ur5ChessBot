@@ -15,8 +15,8 @@ SQUARE_SIZE: float = 0.055
 # Robot Parameters
 TRAVEL_HEIGHT: float = KING_HEIGHT * 2 + 0.01 # To king heights and a tiny margin tall to avoid collision
 CONNECTION_IP: str = '172.31.1.144'  # UR5 Robot IP (modify to actual IP)
-ACCELERATION: float = 1
-SPEED: float = 1.5
+ACCELERATION: float = 0.6
+SPEED: float = 1.0
 GRIPPER_SPEED: int = 150
 GRIPPER_FORCE: int = 50
 
