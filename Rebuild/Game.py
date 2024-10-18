@@ -116,7 +116,7 @@ class Game:
         }
         self.robot.control.disconnect()
     
-    def confirmMove(self):
+    def confirmMove(self, messageCallback):
         oldBoard = self.board
         print(oldBoard)
         updatedBoard = self.dgtBoard.getCurentBoard()
@@ -129,8 +129,10 @@ class Game:
                     self.gameInfo.add_variation(chess.Move.from_uci(move))
                     self.board.push(move)
                     self.turn = self.board.turn
+                    self.playRobotMove()
         else:
             print("Move is illegal")
+            messageCallback()
         pass
         
     def playerMove(self):
