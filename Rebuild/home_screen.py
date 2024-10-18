@@ -1,9 +1,13 @@
 import tkinter as tk
 from tkinter import ttk
 from selection_screen import show_selection_screen
+from PoseConfigure import PoseConfigure
+import Settings
 
 def show_home_screen(root):
     # Set up the main frame with a dark background
+    pose = PoseConfigure()
+
     home_frame = tk.Frame(root, bg="#1a237e")
     home_frame.pack(fill="both", expand=True)
 
@@ -45,6 +49,20 @@ def show_home_screen(root):
     )
     start_button.place(relx=0, rely=0, relwidth=0.4, relheight=1)
 
+    configure_robot_button = tk.Button(
+        buttons_frame,
+        text="Configure Robot",
+        font=("Helvetica", 14, "bold"),
+        bg="#ff5722",
+        fg="#252525",
+        activebackground="#e64a19",
+        activeforeground="white",
+        relief="flat",
+        command=lambda: pose.firstTimeSettup(connectionIP=Settings.CONNECTION_IP)
+    )
+
+    configure_robot_button.place(relx=0.5, rely=0, relwidth=0.4, relheight=1)
+
     # Exit button with modern styling
     exit_button = tk.Button(
         buttons_frame, 
@@ -57,17 +75,7 @@ def show_home_screen(root):
         relief="solid", 
         borderwidth=2
     )
-    exit_button.place(relx=0.5, rely=0, relwidth=0.4, relheight=1)
+    #exit_button.place(relx=0.5, rely=0, relwidth=0.4, relheight=1)
 
     # Ensure the buttons frame expands with the window
     buttons_frame.place(relwidth=0.8, relheight=0.1)
-
-    # Placeholder for an icon or image
-    icon_label = tk.Label(
-        home_frame, 
-        text="♙",  # Chess pawn icon
-        font=("Helvetica", 100), 
-        fg="#ff5722", 
-        bg="#1a237e"
-    )
-    icon_label.place(relx=0.5, rely=0.8, anchor="center")
