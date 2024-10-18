@@ -90,7 +90,7 @@ def show_game_screen(root, selection_frame, color, difficulty):
     resign_button.pack()
 
     def illigal_move():
-        messagebox.showinfo("Illegal Move", "You have made an illegal move.")
+        messagebox.showinfo("Illegal Move", "You have made an illegal move. Please move the piece back to its original position. And try again.")
         move_history.reset_to_current()
    
     def confirm_move():
